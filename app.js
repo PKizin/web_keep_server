@@ -117,6 +117,20 @@ app.post('/todo_list', async (req, res) => {
   }
 })
 
+app.put('/todo_item', async (req, res) => {
+  try {
+    let query = await res.locals.client.query(`insert into todo_item (todo_list_id, label) values (${req.query.list_id}, '${req.query.label}')`)
+    query = await res.locals.client.query(`select max(id) as id from todo_item where todo_list_id = ${req.query.list_id}`)
+    res.statusCode = 200
+    res.end(query.rows[0].id)
+  }
+  catch (e) {
+    console.log(e)
+    res.statusCode = 400
+    res.end(e.detail)
+  }
+})
+
 app.get('/todo_item', async (req, res) => {
   try {
     const query = await res.locals.client.query(`select id, label, checked from todo_item where todo_list_id = ${req.query.id} order by id asc`)
@@ -132,7 +146,20 @@ app.get('/todo_item', async (req, res) => {
 
 app.post('/todo_item', async (req, res) => {
   try {
-    const query = await res.locals.client.query(`update todo_item set checked = ${req.query.checked} where id = ${req.query.id}`)
+    const query = await res.locals.client.query(`update todo_item set label = '${req.query.label}', checked = ${req.query.checked} where id = ${req.query.id}`)
+    res.statusCode = 200
+    res.end()
+  }
+  catch (e) {
+    console.log(e)
+    res.statusCode = 400
+    res.end(e.detail)
+  }
+})
+
+app.delete('/todo_item', async (req, res) => {
+  try {
+    const query = await res.locals.client.query(`delete from todo_item where id = ${req.query.id}`)
     res.statusCode = 200
     res.end()
   }
