@@ -53,7 +53,7 @@ app.get('/user', async (req, res) => {
 
 app.post('/user', async (req, res) => {
   try {
-    const query = await res.locals.client.query(`insert into public.user (login, password) values ('${req.query.username}', '${req.query.password})'`)
+    const query = await res.locals.client.query(`insert into public.user (login, password) values ('${req.query.username}', '${req.query.password}')`)
     res.statusCode = 200
     res.end()
   }
