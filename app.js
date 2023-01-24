@@ -169,3 +169,29 @@ app.delete('/todo_item', async (req, res) => {
     res.end(e.detail)
   }
 })
+
+app.get('/diary', async (req, res) => {
+  try {
+    const query = await res.locals.client.query(`select text from diary where user_id = ${req.query.user_id} and date = '${req.query.date}'`)
+    req.statusCode = 200
+    res.end(JSON.stringify(query.rows))
+  }
+  catch (e) {
+    console.log(e)
+    res.statusCode = 400
+    res.end(e.detail)
+  }
+})
+
+app.post('/diary', async (req, res) => {
+  try {
+    const query = await res.locals.client.query(`insert into diary (user_id, date, text) values (${req.query.user_id}, '${req.query.date}', '${req.query.text}') on conflict on constraint uc_user_date do update set text = '${req.query.text}' where diary.user_id = ${req.query.user_id} and diary.date = '${req.query.date}'`)
+    req.statusCode = 200
+    res.end()
+  }
+  catch (e) {
+    console.log(e)
+    res.statusCode = 400
+    res.end(e.detail)
+  }
+})
