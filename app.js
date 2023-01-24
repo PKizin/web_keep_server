@@ -195,3 +195,29 @@ app.post('/diary', async (req, res) => {
     res.end(e.detail)
   }
 })
+
+app.get('/weekly', async (req, res) => {
+  try {
+    const query = await res.locals.client.query(`select text from weekly where user_id = ${req.query.user_id} and day = ${req.query.day}`)
+    req.statusCode = 200
+    res.end(JSON.stringify(query.rows))
+  }
+  catch (e) {
+    console.log(e)
+    res.statusCode = 400
+    res.end(e.detail)
+  }
+})
+
+app.post('/weekly', async (req, res) => {
+  try {
+    const query = await res.locals.client.query(`insert into weekly (user_id, day, text) values (${req.query.user_id}, ${req.query.day}, '${req.query.text}') on conflict on constraint uc_user_day do update set text = '${req.query.text}' where weekly.user_id = ${req.query.user_id} and weekly.day = ${req.query.day}`)
+    req.statusCode = 200
+    res.end()
+  }
+  catch (e) {
+    console.log(e)
+    res.statusCode = 400
+    res.end(e.detail)
+  }
+})
